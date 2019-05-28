@@ -17,10 +17,12 @@ export default class App extends Component {
   x = 100;
   y = 100;
   radius = 30;
-  speedX = 1;
-  speedY = 1;
-  color = 'purple';
+  speedX = 5;
+  speedY = 5;
+  color;
   frameId;
+
+  getRandomColor = () => `rgb(${Math.floor(Math.random()*256)}, ${Math.floor(Math.random()*256)}, ${Math.floor(Math.random()*256)})`;
 
   move = () => {
     if(this.x+this.radius+this.speedX > this.canvas.width){
@@ -40,7 +42,7 @@ export default class App extends Component {
   }
 
   draw = () => {
-    this.ctx.fillStyle = this.color;
+    this.ctx.fillStyle = this.getRandomColor();
     this.ctx.beginPath();
     this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
     this.ctx.fill();
@@ -75,7 +77,5 @@ const styles = StyleSheet.create({
   canvas: {
     marginTop: 20,
     backgroundColor: '#EEE'
-    // borderColor: '#333',
-    // borderWidth: 1,
   }
 });
