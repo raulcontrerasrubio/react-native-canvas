@@ -7,43 +7,75 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
+import Canvas from 'react-native-canvas';
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+export default class App extends Component {
+  
+  canvas;
+  ctx;
+  x = 100;
+  y = 100;
+  radius = 30;
+  speedX = 1;
+  speedY = 1;
+  color = 'purple';
+  frameId;
 
-type Props = {};
-export default class App extends Component<Props> {
+  move = () => {
+    if(this.x+this.radius+this.speedX > this.canvas.width){
+      this.speedX *= -1;
+    }
+    if(this.x-this.radius+this.speedX < 0){
+      this.speedX *= -1;
+    }
+    if(this.y+this.radius+this.speedY > this.canvas.height){
+      this.speedY *= -1;
+    }
+    if(this.y-this.radius+this.speedY < 0){
+      this.speedY *= -1;
+    }
+    this.x += this.speedX;
+    this.y += this.speedY;
+  }
+
+  draw = () => {
+    this.ctx.fillStyle = this.color;
+    this.ctx.beginPath();
+    this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+    this.ctx.fill();
+    this.ctx.closePath();
+  }
+
+
+  handleCanvas = (canvas) => {
+    this.canvas = canvas;
+    this.ctx = this.canvas.getContext('2d');
+    this.canvas.width = Dimensions.get('window').width;
+    this.canvas.height = Dimensions.get('window').height - 20;
+    this.frameId = requestAnimationFrame(this.gameLoop);
+  }
+
+  gameLoop = () => {
+    this.frameId = requestAnimationFrame(this.gameLoop);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.move();
+    this.draw();
+  }
+
+
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-      </View>
+      <Canvas ref={this.handleCanvas} style={styles.canvas}/>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+  canvas: {
+    marginTop: 20,
+    backgroundColor: '#EEE'
+    // borderColor: '#333',
+    // borderWidth: 1,
+  }
 });
